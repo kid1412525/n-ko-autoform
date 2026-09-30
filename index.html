@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="N高の授業出席用Googleフォームを、名前を入れた状態で開くツール">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-title" content="N高フォーム">
+  <title>N高自動フォーム</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="app-header-inner">
+      <div class="brand">
+        <h1>N高自動フォーム</h1>
+        <p class="tagline">授業の出席フォームを、名前を入れた状態で開きます</p>
+      </div>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="ダークモードに切り替え">🌙</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section id="timetable-area" aria-label="時間割"></section>
+    <section id="register-area" aria-label="授業の登録"></section>
+    <section id="profile-area" aria-label="あなたの情報"></section>
+    <section id="history-area" aria-label="履歴"></section>
+    <noscript><p>このアプリを使うには JavaScript を有効にしてください。</p></noscript>
+  </main>
+
+  <footer class="app-footer">
+    <p class="footer-note">データはこの端末のブラウザ（localStorage）にだけ保存され、外部には送信されません。</p>
+    <p class="footer-note">N高等学校の公式ツールではありません。</p>
+  </footer>
+
+  <dialog id="dialog" class="dialog" aria-label="詳細"></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,1035 @@
+/* =========================================================================
+   N高自動フォーム — style.css
+   ミニマルなデザイン：要素を枠で囲まず、余白と細い直線だけで区切る。
+   色はすべて :root のトークンで定義し、ダークモードではトークンだけを置き換える。
+   ========================================================================= */
+
+:root {
+  --bg: #ffffff;
+  --text: #1f2328;
+  --muted: #5d6671;
+  --line: #e4e7eb;
+  --line-strong: #c5cbd2;
+  --accent: #0f766e;
+  --accent-hover: #0b5f58;
+  --accent-soft: rgba(15, 118, 110, 0.15);
+  --on-accent: #ffffff;
+  --ok: #1a7f37;
+  --warn: #8a5a00;
+  --warn-line: #d4a72c;
+  --danger: #c62828;
+  --toast-error: #b42318;
+  --backdrop: rgba(17, 20, 24, 0.45);
+  --font: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP", "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111418;
+    --text: #e6e8eb;
+    --muted: #9aa3ad;
+    --line: #262b31;
+    --line-strong: #3b424a;
+    --accent: #2dd4bf;
+    --accent-hover: #5eead4;
+    --accent-soft: rgba(45, 212, 191, 0.2);
+    --on-accent: #06201d;
+    --ok: #3fb950;
+    --warn: #e3b341;
+    --warn-line: #d29922;
+    --danger: #f47067;
+    --backdrop: rgba(0, 0, 0, 0.6);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #111418;
+  --text: #e6e8eb;
+  --muted: #9aa3ad;
+  --line: #262b31;
+  --line-strong: #3b424a;
+  --accent: #2dd4bf;
+  --accent-hover: #5eead4;
+  --accent-soft: rgba(45, 212, 191, 0.2);
+  --on-accent: #06201d;
+  --ok: #3fb950;
+  --warn: #e3b341;
+  --warn-line: #d29922;
+  --danger: #f47067;
+  --backdrop: rgba(0, 0, 0, 0.6);
+  color-scheme: dark;
+}
+
+/* ---- ベース ---- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 13px;
+}
+
+/* ---- ヘッダー ---- */
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding-top: env(safe-area-inset-top);
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  transition: transform 0.25s ease;
+}
+
+/* 下にスクロールしている間は隠す（app.js が付け外しする） */
+.app-header.is-hidden {
+  transform: translateY(-100%);
+}
+
+.app-header-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand {
+  min-width: 0;
+}
+
+.brand h1 {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.tagline {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.theme-toggle {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* ---- レイアウト ---- */
+
+.layout {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.layout > section {
+  padding: 40px 0;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 72px;
+}
+
+.layout > section:first-child {
+  border-top: none;
+}
+
+/* PCでは、上に時間割（フォームを開く場所）、下に登録・名前・履歴（設定まわり）を2列で並べる */
+@media (min-width: 960px) {
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    grid-template-areas:
+      "timetable timetable"
+      "register profile"
+      "register history";
+    column-gap: 56px;
+    align-items: start;
+  }
+
+  #timetable-area { grid-area: timetable; }
+  #register-area { grid-area: register; }
+  #profile-area { grid-area: profile; }
+  #history-area { grid-area: history; }
+}
+
+.area-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.area-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.sub-title {
+  margin: 36px 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.area-head + .sub-title,
+.area-head + .today .sub-title,
+.onboarding + .today .sub-title {
+  margin-top: 0;
+}
+
+/* ---- ボタン（主要な操作だけ塗りつぶし、それ以外は文字だけ） ---- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 2px;
+  border: none;
+  border-radius: 0;
+  background: none;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.btn:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.btn.primary {
+  padding: 8px 18px;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.btn.primary:hover {
+  background: var(--accent-hover);
+  text-decoration: none;
+}
+
+.btn.danger {
+  color: var(--danger);
+}
+
+.btn.small {
+  min-height: 34px;
+  font-size: 13px;
+}
+
+.btn.primary.small {
+  padding: 6px 14px;
+}
+
+.btn.wide {
+  width: 100%;
+  min-height: 48px;
+  font-size: 15px;
+}
+
+.btn.bookmarklet {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: grab;
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.icon-btn {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  color: var(--text);
+}
+
+/* 状態を表す短い文字（枠は付けない） */
+.chip {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.chip.accent {
+  color: var(--accent);
+}
+
+.chip.now {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ---- はじめに ---- */
+
+.onboarding {
+  margin-bottom: 36px;
+}
+
+.onboarding-title {
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.onboarding ol {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding-left: 1.5em;
+}
+
+.onboarding a {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 3px;
+}
+
+.onboarding a:hover {
+  text-decoration-color: var(--accent);
+}
+
+.onboarding .done {
+  margin-left: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ---- 今日の授業 ---- */
+
+.today-list {
+  border-top: 1px solid var(--line);
+}
+
+.today-item {
+  display: grid;
+  grid-template-columns: 7.5em minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.today-period {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.4;
+}
+
+.today-period span {
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.today-item.is-now .today-period strong {
+  color: var(--accent);
+}
+
+.today-name {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.today-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+}
+
+.today-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+  .today-item {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 8px 16px;
+  }
+
+  .today-actions {
+    grid-column: 1 / -1;
+  }
+
+  .today-actions .btn {
+    width: 100%;
+  }
+}
+
+/* ---- 1週間の時間割（横線と、曜日を区切る縦線の表） ---- */
+
+.tt-scroll {
+  overflow-x: auto;
+}
+
+.tt-grid {
+  display: grid;
+  grid-template-columns: 56px repeat(var(--days, 5), minmax(56px, 1fr));
+}
+
+.tt-grid > * {
+  border-bottom: 1px solid var(--line);
+}
+
+.tt-corner,
+.tt-day {
+  padding: 8px 4px;
+  border-bottom-color: var(--line-strong);
+}
+
+/* 曜日の列の左側に縦線を引いて、曜日どうしを区切る（表の左端・右端には線を引かない） */
+.tt-day,
+.tt-cell {
+  border-left: 1px solid var(--line-strong);
+}
+
+.tt-day {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.tt-day.is-today {
+  color: var(--accent);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.tt-period {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px 4px;
+  line-height: 1.3;
+}
+
+.tt-period strong {
+  font-size: 13px;
+}
+
+.tt-period span {
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.tt-period.is-now strong,
+.tt-period.is-now span {
+  color: var(--accent);
+}
+
+.tt-cell {
+  min-height: 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 4px;
+}
+
+.tt-class {
+  padding: 4px;
+  border: none;
+  background: none;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+  cursor: pointer;
+}
+
+.tt-class:hover {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.tt-cell.is-today .tt-class {
+  color: var(--accent);
+}
+
+.tt-class-name {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.tt-class.inline {
+  padding: 4px 0;
+  font-size: 14px;
+  text-align: left;
+}
+
+.tt-add {
+  width: 100%;
+  min-height: 40px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 16px;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.tt-cell:hover .tt-add,
+.tt-add:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .tt-add {
+    opacity: 0.4;
+  }
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+}
+
+/* ---- 授業の登録 ---- */
+
+.reg-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: reg;
+}
+
+.reg-steps > li {
+  position: relative;
+  padding-left: 1.8em;
+  counter-increment: reg;
+}
+
+.reg-steps > li::before {
+  content: counter(reg) ".";
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.step-title {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+
+.reg-steps .btn-row {
+  margin-top: 4px;
+}
+
+.reg-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.reg-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.reg-actions {
+  margin-top: 24px;
+}
+
+/* 時間割のコマを選ぶ表（入力部分なので、マスは枠で囲む） */
+.slot-picker {
+  max-width: 420px;
+  display: grid;
+  grid-template-columns: 40px repeat(var(--days, 5), minmax(36px, 1fr));
+  gap: 4px;
+}
+
+.sp-day,
+.sp-period {
+  min-height: 28px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.sp-cell {
+  min-height: 38px;
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--on-accent);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sp-cell:hover {
+  border-color: var(--accent);
+}
+
+.sp-cell[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+/* ---- 入力欄（入力できる場所がわかるように枠で囲む） ---- */
+
+.label {
+  display: block;
+  margin: 20px 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.input {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 16px; /* iPhoneで入力時に拡大されないように16px以上 */
+}
+
+.input::placeholder {
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+textarea.input {
+  min-height: 88px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.input.mono {
+  font-family: var(--mono);
+}
+
+@media (min-width: 641px) {
+  .input.mono {
+    font-size: 13px;
+  }
+}
+
+.select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 34px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.select option {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.input-row .input {
+  flex: 1;
+  min-width: 0;
+}
+
+.field-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.field-block .input + .input {
+  margin-top: 8px;
+}
+
+.hint {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.form-msg {
+  font-size: 14px;
+}
+
+.form-msg.ok {
+  color: var(--ok);
+}
+
+.form-msg.warn {
+  color: var(--warn);
+}
+
+.form-msg.error {
+  color: var(--danger);
+}
+
+.howto {
+  margin-top: 8px;
+}
+
+.howto > summary {
+  width: fit-content;
+  font-size: 14px;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.howto ol {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 8px 0 0;
+  padding-left: 1.4em;
+  font-size: 14px;
+}
+
+.manual > p {
+  margin-top: 8px;
+}
+
+.manual > .btn {
+  margin-top: 12px;
+}
+
+/* ---- あなたの情報：提出時の注意（左の線と色で示す） ---- */
+
+.alert-warning {
+  margin-top: 28px;
+  padding: 2px 0 2px 16px;
+  border-left: 3px solid var(--warn-line);
+}
+
+.alert-title {
+  margin-bottom: 4px;
+  font-weight: 700;
+  color: var(--warn);
+}
+
+.alert-warning p:not(.alert-title) {
+  font-size: 14px;
+}
+
+/* ---- 履歴 ---- */
+
+.history {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.history li {
+  display: grid;
+  grid-template-columns: 11em minmax(0, 1fr);
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+
+.history-time {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.history-name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+  .history li {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}
+
+/* ---- ダイアログ ---- */
+
+.dialog {
+  width: min(480px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: var(--bg);
+  color: var(--text);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.dialog::backdrop {
+  background: var(--backdrop);
+}
+
+.dialog-inner {
+  padding: 24px;
+}
+
+.dialog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.dialog-head h2 {
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.dialog-inner > p + p {
+  margin-top: 4px;
+}
+
+.dialog-actions {
+  margin: 24px 0 8px;
+}
+
+.dialog-sub {
+  margin-top: 20px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.dialog-foot {
+  justify-content: flex-end;
+  margin-top: 28px;
+}
+
+.day-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+
+.day-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.day-check input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.period-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.period-row {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+}
+
+.period-label {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* ---- フッター ---- */
+
+.app-footer {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 24px 20px calc(40px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+}
+
+.footer-note {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ---- トースト ---- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  z-index: 100;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  padding: 10px 16px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 8px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.toast[data-tone="error"] {
+  background: var(--toast-error);
+  color: #ffffff;
+}
+
+/* ---- スマホ ---- */
+
+@media (max-width: 640px) {
+  .app-header-inner {
+    padding: 12px 16px;
+  }
+
+  .layout {
+    padding: 0 16px;
+  }
+
+  .layout > section {
+    padding: 32px 0;
+  }
+
+  /* 6曜日（月〜土）までは横スクロールなしで収まる幅 */
+  .tt-grid {
+    grid-template-columns: 40px repeat(var(--days, 5), minmax(44px, 1fr));
+  }
+
+  .tt-class {
+    font-size: 12px;
+  }
+
+  .app-footer {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
